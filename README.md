@@ -19,6 +19,6 @@ console.log(code);
 
 
 reference<br>
-<a href ="https://www.youtube.com/watch?v=_PPWWRV6gbA">The Only Markdown Crash Course You Will Ever Need</a>
+<a href ="https://www.markdownguide.org/basic-syntax/">Syntax 모음집</a>
 
 
