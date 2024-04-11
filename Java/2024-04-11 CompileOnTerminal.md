@@ -11,6 +11,9 @@
 <tr><td>파일구분자</td>
 <td>;</td>
 <td>:</td></tr>
+<tr><td>인풋스트림 종료</td>
+<td>Ctrl + z</td>
+<td>Ctrl + d</td></tr>
 </table>
 
 ### CMD 경로 지정
