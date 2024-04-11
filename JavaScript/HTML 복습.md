@@ -191,3 +191,43 @@ option 그룹화
 <textarea name="message" rows="10" cols="30">Write something here</textarea>
 ```
 
+
+*button*    
+reset :폼 내의 모든 입력필드 초기화  
+submit : 폼 데이터 서버 제출
+button : 기본 버튼  
+
+### fieldset & legend
++ 단순 스타일링이 아닌, <b>Semantic</b>의 역할을 한다.
+   + 처음 배울때에는 스타일링이라 생각하였음.
++ 접근성의 역할이 크다 
+
+*form 과의 상호 작용, 의미의 구조화를 볼 수 있다.*
+```html
+<form action="/register" method="post">
+  <fieldset>
+    <legend>개인 정보</legend>
+    <label for="name">이름:</label>
+    <input type="text" id="name" name="user_name">
+    <label for="email">이메일:</label>
+    <input type="email" id="email" name="user_email">
+  </fieldset>
+  <fieldset>
+    <legend>선호 설정</legend>
+    <label for="newsletter">뉴스레터 구독하기:</label>
+    <input type="checkbox" id="newsletter" name="subscribe_newsletter">
+    <label for="interests">관심 분야:</label>
+    <select id="interests" name="user_interests">
+      <option value="technology">기술</option>
+      <option value="science">과학</option>
+      <option value="music">음악</option>
+    </select>
+  </fieldset>
+  <button type="submit">등록하기</button>
+</form>
+```
+
+Layout Typical 한 예시  
+![layout 예시](https://poiemaweb.com/img/html-layout.png) 
+
+*header/nav/aside/section/article/footer*
