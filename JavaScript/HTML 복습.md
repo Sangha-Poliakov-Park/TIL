@@ -155,7 +155,7 @@ poster : 로딩 중 보여지는 화면
 *post*
 get보다 속도 느림
 
-[input 타입 열거](./inputType열거.md) 
+[input 타입 열거](./etc/inputType열거.md) 
 
 ## select 태그
 
@@ -185,7 +185,8 @@ option 그룹화
     </select>
 ```
 
-textarea : 초기 값 innerHTML, 사용자가 내용 입력시 value 값에 저장됨
+*textarea*  
+초기 값 innerHTML이 value에 담겨있고, 사용자가 내용  입력시 value 값에 저장됨 다만 value가 explicit하게 보이지는 않음
 ```html
 <textarea name="message" rows="10" cols="30">Write something here</textarea>
 ```
