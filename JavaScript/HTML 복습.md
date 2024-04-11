@@ -185,7 +185,7 @@ option 그룹화
     </select>
 ```
 
-textarea : value 값이 없음을 주의 할 것
+textarea : 초기 값 innerHTML, 사용자가 내용 입력시 value 값에 저장됨
 ```html
 <textarea name="message" rows="10" cols="30">Write something here</textarea>
 ```
