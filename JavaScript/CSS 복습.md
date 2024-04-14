@@ -2,9 +2,7 @@
 ### [BFC 개념](https://velog.io/@eenaree/Block-Formatting-Context)
 [원본링크](https://www.w3.org/TR/CSS2/visuren.html#normal-flow)
 
-> 순차적으로 기록하던 도중 가장 중요한 개념이라 생각되어 최상단으로 옮긴다. 
-
-링크 내 블로거가 매우 정리를 잘 해놓았다. 개념을 잊은 경우에는 링크를 정독하면 바로 이해가 가능하다.   
+링크 블로거가 매우 정리를 잘 해놓았다. 개념을 잊은 경우에는 링크를 정독하면 바로 이해가 가능하다.   
 *원문 참고*          
 In a block formatting context, each box's left outer edge touches the left edge of the containing block (for right-to-left formatting, right edges touch). <u>This is true even in the presence of floats (although a box's line boxes may shrink due to the floats), <b>unless the box establishes a new block formatting context (in which case the box itself may become narrower due to the floats).</b></u>
         
@@ -40,7 +38,7 @@ p {
     -webkit-text-fill-color: transparent;
     text-fill-color: transparent;
     background-size: 500% auto;
-    animation: textShine 5s ease-in-out infinite alternate;
+    animation: textShine 5s ease-in-out infinite alternate;해서는 자바스크립트 사용이 바람직하다. 예를 들어 바운스, 중지, 일시 중지, 되감기 또는 감속과 같은 고급 효과는 자바스크립트가 훨씬 유용하다.
 }
 
 @keyframes textShine {
@@ -53,6 +51,36 @@ p {
 }
 ```
 <hr><hr>
+
+## Transform
+
+> 기준점 정하기
+> transform-origin: $x$ $y$ -> 외부 좌표도 가능하다.
+
+
+## pseudo
+태그의 앞뒤가 아닌 태그 속 content의 앞뒤를 의미하는 점을 놓치지 말자
+
+## flex
+[Reference](https://youtu.be/u044iM9xsWU?si=2M5ucHzDNDh-tRaF)
+
+원리
+ 모든 것을 최소화 한 상태에서 한 줄에 배치하는 것.
+width : max-content/min-content 기능에 대한 이해 후,
+line break없이 가능한한 max-content를 유지하되 공간이 없으면 wrap한다.
+
+
+
+
+### 실습 후 소감, 팁
+  [예제를 이미지만 보고 재현해봄](./etc/Layout연습/1stLayout.html)
+  > + toggle 버튼을 만들 때에는 span 외부 margin 처리보다 span 내부 absolute 처리가 더 편리하다
+  > + X자로 변경시킬 때 중심원점을 잡고 회전시키기가 훨씬 편리하다.
+  > + float는 left로만 해도 width에 맞게 주욱 이어지므로 반드시 좌우 지정할 이유는 없다. 
+  > + width 대신 top -> right 를 이용하여 범위를 지정할 수 있다.
+  > + clearfix 기법을 통해 그 하단부 블록이 가상 컨텐츠 밑으로 떨어지게 하여 footer를 구성할 수 있다.
+  > + bottom 0 으로 바로 맨 밑으로 떨어뜨리는 방법
+  > + absolute 시 아무런 부모 relative가 없다면 html 순서에 맞게 배치된후 부유객체화 됨 
 
 
 단순 복습용 기록
@@ -301,17 +329,7 @@ background: #FFEE99 url("http://poiemaweb.com/img/bg/dot.png") no-repeat center;
  ```
 .truncate {
   width: 150px;             /* width가 지정되어 있어야 한다. */
-  white-space: nowrap;
-  overflow: hidden;         /* 반드시 "visible" 이외의 값이 지정되어 있어야 한다. */
-  text-overflow: ellipsis;  /* ellipsis or clip */
-}
- ```
-
-overflow는 자식 요소가 부모요소를 넘었을 때 처리하는 일반적인 의미로 이해하는 것이 중요
-visible/hidden/scroll/auto
-
-특정방향으로 스크롤 할 때는 
-overflow-x 또는 overflow-y 속성을 auto로
+  white-space: nowrap;div
 
  ### word-wrap /word-break
  `.word-wrap { word-wrap: break-word; }`
@@ -340,4 +358,35 @@ BFC를 딥하게 파면 이것보다 세련된 설명이 가능할 것으로 유
 `head내 style > head.style 내 @import> link 연결 css파일> link 연결 css파일 내 import > 브라우저 디폴트 시트 `
 
 `!important > 인라인 스타일 > 아이디 선택자 > 클래스/어트리뷰트/가상 선택자 > 태그 선택자 > 전체 선택자 > 상위 요소에 의해 상속된 속성`
+
+
+## Transition
+### *transition-timing-function*  
+
+> transition-property  
+> transition-duration  
+> transition-timing-function  
+> transition-delay  : 시작까지 대기시간  
+> transition  `transition: property duration function delay`
+
+ease =  느리게시작 - 가속 - 마지막에만  
+linear : $y=x$
+ease-in : 느리게시작 -> 일정한 속도 도달 -> 등속  
+ease-out : 등속시작-> 느리게 -> 종료  
+ease-in-out :느리게 - 가속하다 중간에서 느려짐 -> 종료   
+
+### *animation*
++ keyframse "animation-name"
+
+>animation-name
+>animation-duration  
+>animation-timing-function  
+>animation-delay  
+>animation-iteration-count : 1~ $\infty$  
+>animation-direction  :   
+$\left\{normal, reverse, alternate_{홀수번째 normal, 짝수번째 reverse}, alternate-reverse\right\}$  
+>animation-fill-mode   
+$\left\{none, forwards, backwards_{시작프레임으로 대기만}, both \right\}$   
+>animation-play-state  :paused, running  
+>`animation: name duration timing-function delay iteration-count direction fill-mode play-state`
 
