@@ -154,4 +154,337 @@ var t = "hello"
 t = null;
 /*"hello" 문자열은 garbage
 도달 가능성(reachability)이 사라졌기 때문이다.
+*/
+```
 
+
+## 객체 생성
+
+<mark>생성자로 객체 만드는게 아닐경우 프로퍼티 선언 후 ';' 빼야함</mark>
+
+```javascript 
+function Student(name, age, gender, greetings = "") {
+    this.name = name;
+    this.age = age;
+    this.gender = gender;
+    /* 'Student' 생성자 함수에서 'greetings' 매개변수는 기본값으로  설정한 후,
+       'greetings' 함수는 매개변수 'str'을 가지며, 이 매개변수의 기본값을 생성자 함수의 'greetings' 매개변수 값으로 지정한다.
+       'greetings' 함수 선언시 매개변수 내부에 greetings만 작성한다면, 이는 지역변수를 생성한 것으로 취급된다. 
+       */
+    this.greetings = function (str = greetings) { console.log(this.name + " 인사 : " + str); }
+}
+const sangha = new Student("박상하", 12, "남자", "안녕?");
+sangha.greetings();
+```
+프로퍼티 성질
+```javascript
+var person = {
+  'first-name': 'Ung-mo',
+  'last-name': 'Lee',
+  gender: 'male'
+};
+
+for (var prop in person) {
+  console.log(prop + ': ' + person[prop]);
+}
+```
+
+*for-in 문은 객체의 문자열 키(key)를 순회*
++ 배열에서 사용시 문제 
+    + 배열 요소에 배열 프로퍼티까지 순회하는 문제
+    + SET 처럼 순회함.
+
+*for-of 로 배열 순회*
+
+```javascript
+for (const value of array) {
+  console.log(value);
+
+for (const [index, value] of array.entries()) {
+  console.log(index, value);
+}
+```
+
+*참조값 전달*
+```javascript
+// Pass-by-reference
+var foo = {
+  val: 10
+}
+
+var bar = foo;
+console.log(foo.val, bar.val); // 10 10
+console.log(foo === bar);      // true
+
+bar.val = 20;
+console.log(foo.val, bar.val); // 20 20
+console.log(foo === bar);      // true
+```
+
+*유효하지 않은 프로퍼티 선언*
+```javascript
+let student = {
+//-가 연산자로 작동, first 변수부터 찾으므로 오류 발생
+//모든 프로퍼티 키는 String 값이다.
+//''로 표현하든 [] 사이에 넣든 식으로 프로퍼티 표현 가능 
+first-name : "James"
+}
+//access할 때는 [''] 대괄호 안에 따옴표까지 넣어서.
+
+console.student['first-name']
+```
+
+>assign으로 immutable 객체 생성시 source의 프로퍼티만 복사한다.  
+$\therefore$ 프로퍼티 값이 참조 값인 경우 같은 주소값을 참조한다.  
+  primitive인 경우에만 고유한 복사된 프로퍼티를 보유한다.
+
+deep freeze 나중에 한번 더보기
+
+
+## 함수
+
+함수 선언문도 함수 표현식과 동일하게 함수 리터럴 방식으로 정의되는 것. 다만 함수 선언 후 변수에 함수 참조값을 할당하는 것을 생략했을 뿐임.
+
+익명함수는 호이스팅 되지 않는점 잊지 말 것 
+
+### 일급 객체 <a href="#prototype"> 프로토타입을 이해하고 다시 읽으면 전부 명확하게 보인다</a>
+함수들은 Function 클래스의 인스턴스이다.
+따라서 변수에 선언하면 해당 객체의 참조값을 pass하고, 생성자로 만들 수 도 있으며, 함수 내에서 불러오기도 가능하다.
+new Function(arg1, arg2, ... argN, functionBody)
+arg1: parameter 변수, 전부 문자열 타입, 'return sum;' 식으로 (거의 사용 안함)
+
+
+### 콜백함수
++ Javascript의 메모리관리
+[콜스택 - 큐 관계](https://new93helloworld.tistory.com/361)
+[원본](https://gist.github.com/jesstelford/9a35d20a2aa044df8bf241e00d7bc2d0)
+
+> 내가 한 이해
+>onclick에 자바스크립트 코드가 있다고 치면, onclick이 일어난 후 그 콜백함수가 큐에 저장되어있다가 stack에 있는 다른 함수들의 실행컨텍스트가 전부 pop 되면 들어가서 실행됨
+
+### 리턴
+함수는 반환을 생략할 수 있다. 이때 함수는 암묵적으로 undefined를 반환한다.
+
+배열 반환 `return [area, volume]; // 복수 값의 반환`
+
+### arguments
+매개변수를 인자로 갖는 배열과 유사한 객체이다.
+(객체이나 property key를 별도설정하지 않은 느낌처럼)
+length 속성은 있으나 , for...of 사용 불가능
+
+배열로 만들기 -> Function.prototype.call, Function.prototype.apply
+
+
+*caller* 
+자신을 호출한 함수
+
+*length*
+매개변수의 갯수
+arguments.length는 인자의 갯수(선언된 매개변수의 갯수가 아닌 것)
+
+*name*
+함수 이름
+
+### 함수 형태
+
+*즉시실현*  
+함수선언시 <sub>단순(){}형태로</sub>  중괄호 뒤에 자동으로 세미콜론이 붙는 자바스크립트 엔진 특성으로 함수실행용()까지 포함하거나 선언문에 괄호를 쳐 세미콜론을 막아줌
+$\left( \text{함수선언} \left( \phantom{hi} \right) \right)$  
+$\left( \text{함수선언} \right) \left(\phantom{hi} \right)$
+
+
+
+
+##타입 확인
+
+> 1. Object.prototype.toString.call('');
+> 2. slice로 필요한 부분 짤라서.
+> 3. slice(beginIndex, endIndex) => 추출 범위 [beginIndex, endIndex)
+
+좋은 예시
+```html
+<!DOCTYPE html>
+<html>
+<body>
+  <p>Hello</p>
+  <script>
+    function getType(target) {
+      return Object.prototype.toString.call(target).slice(8, -1);
+    }
+
+    function isString(target) {
+      return getType(target) === 'String';
+    }
+
+    function isElement(target) {
+      return !!(target && target instanceof HTMLElement);
+      // 또는 `nodeType`을 사용할 수도 있다.
+      // return !!(target && target.nodeType === 1);
+    }
+
+    // HTMLElement를 상속받은 모든 DOM 요소에 css 프로퍼티를 추가하고 값을 할당한다.
+    function css(elem, prop, val) {
+      // type checking
+      if (!(isElement(elem) && isString(prop) && isString(val))) {
+        throw new TypeError('매개변수의 타입이 맞지 않습니다.');
+      }
+      elem.style[prop] = val;
+    }
+
+    css(document.querySelector('p'), 'color', 'red');
+    css(document.querySelector('div'), 'color', 'red');
+    // TypeError: 매개변수의 타입이 맞지 않습니다.
+  </script>
+</body>
+</html>
+```
+
+<div id="prototype">
+
+## 프로토타입
+
+>나의 해석 (공부전)<del> 
+>Function.prototype 은 Function 타입의 prototype이라는 key 명칭을 가진 객체이고 모든 함수는 이 Function 타입의 prototype객체를 부모 객체로 두어 상속 받는다.
+반면 Function의 prototype을 키값으로 가지는 객체는 Object의 prototype을 키값으로 가지는 객체를 부모로둔다.</del>
+
+1. new 함수실행; 을 하게되면, new 시점에 텅 비어있는 객체를 생성하고 new 실행이 끝나기 전에 [[PROTOTYPE]] 링크에 생성 함수의 prototype 프로퍼티가 가리키고 있는 객체를 연결한다.
+
+2. 이 객체를 표기하기 위해 생성자.prototype이라 표현하는 것이고, 생성자.prototype 은 다시 Object.prototype을 상속 받는다.
+
+3. 반면 함수 자체는 [[PROTOTYPE]]에 Function.prototype을 링크 시켜놓는다. 다시 이 Function.prototype은 Object.prototype을 상속 받는다.
+
+4. 그렇다면 Function.__proto__는 무엇인가? 놀랍게도 Function.prototype이다
+
+5. 이로 인해 Function이 Object.prototype을 상속 받는 객체임을 알 수 있다.
+
+6. 반면 Object는 Function.prototype을 상속 받는다.
+    >> 콘솔에는 .prototype이 생략되어서 헷갈릴 수 있다. 리터럴로 생성한 객체는 Object.prototype을 상속 받는다.
+
+>new MyFunction()으로 생성된 객체 → 상속받는 프로토타입: MyFunction.prototype  
+MyFunction.prototype → 상속받는 프로토타입: Object.prototype  
+MyFunction (함수로서) → 상속받는 프로토타입: Function.prototype
+Function.prototype → 상속받는 프로토타입: Object.prototype
+
+원시타입의 경우 해당 원시타입의 생성자 함수.prototype의 메소드나 프로퍼티를 호출하고자 한다면 그 객체로 잠시 변환되어 사용할 수 있다.
+
+그러나 원시타입 자체는 객체가 아니므로 String타입의 str가 있다고 할 때 str.addFunction = function(){}가 불가하다.
+
+하지만 String.prototype안에 해당 함수를 넣어버리면 호출할 수 있다.
+
+*instanceof 작동원리*
+
+>    object instanceof Constructor에서, JavaScript는 Constructor.prototype이 object의 프로토타입 체인 어딘가에 존재하는지를 확인.
+    이는 Constructor.prototype이 object.__proto__, object.__proto__.__proto__, ... (이런 식으로 계속 위로 올라가며) 중 하나와 일치하는지를 검사.
+> 즉 메소드 이름이 그 작동원리까지는 나타내지 못하고 있다.
+>실제로는 그 생성자의 prototype 속성이 해당 객체의 프로토타입 체인에 포함되어 있는지를 확인하는 것이기 때문
+*프로토타입 객체 변경관련 내용*
+```javascript
+function Person(name) {
+  this.name = name;
+}
+
+var foo = new Person('Lee');
+
+// 프로토타입 객체의 변경
+Person.prototype = { gender: 'male' };
+
+var bar = new Person('Kim');
+
+console.log(foo.gender); // undefined
+console.log(bar.gender); // 'male'
+
+console.log(foo.constructor); // ① Person(name)
+console.log(bar.constructor); // ② Object()
+
+```
+
+프로토타입의 필드가 객체의 필드와 동일하면 객체의 값으로 할당된다.
+*자바의 은닉화 대응되는 개념이다*
+
+
+### scope
+
+Dynamic : 함수가 호출되는 시점에서 상위 스코프 결정
+Lexical : 함수가 선언되는 시점에서 상위 스코프 결정 --> Java, Javascript
+
+*더글라스 크락포드의 제안*
+
+> 전역변수 관리 
+```javascript
+var MYAPP = {};
+
+MYAPP.student = {
+  name: 'Lee',
+  gender: 'male'
+};
+```
+
+## this
+[reference](https://www.youtube.com/watch?v=gvicrj31JOM)
+>함수의 호출시 arguments(객체)와 this를 암묵적으로 전달 받음.
+>함수 호출 시마다 this에 바인딩 되는 객체가 달라짐...
+
+window(브라우저), global(노드)도 Object.prototype을 상속받는 개체들이다.
+
+메소드로서 호출될 때 함수에 속한 this가 호출한 객체로 변한다. -> 원리 알겠음
+이외 함수 선언할 때에는 this는 global 객체로 변한다.-> 원리 모르겠음 -> 원리라기 보다는 실행 컨텍스트가 시작될 때 this가 바인딩 되는 규칙이라고 이해하면 될 듯 하다.
+
+정리하면,
+
+객체의 메소드로써 호출 될 때 this는 그 객체에 바인디
+단독 함수로 호출 될때 this는 global로 바인딩
+생성자 함수 호출 시 생성되는 객체에 this 바인딩
+call, apply bind 메소드로 this 값 설정 가능
+
+메소드 선언시 프로토타입에 추가하면 프로토타입 객체를 받는지 궁금하여 시험해봤음
+```javascript
+function Student(){
+}
+Student.prototype.sayHello = function(){
+    console.log(this ==student); //true이다...
+}
+const student = new Student();
+student.sayHello();
+
+//처음에 Student.prototype의 메소드로 function이 설정되었는데 어째서 Student.prototype 객체가 this가 아닌지 이해가 안되었다.
+//this는 선언시에 정해지는 것이 아니다!! 호출 될때 누가 호출하였는가로 설정되는 것이기 때문에 student가 호출 하는 순간이므로 this는 student가 되는 것이다.
+```
+> 메소드 내부함수 this를 외부함수 객체로 받는 법
+```javascript
+var value = 1;
+
+var obj = {
+  value: 100,
+  foo: function() {
+    var that = this;  // Workaround : this === obj
+    console.log("foo's this: ",  this);  // obj
+    console.log("foo's this.value: ",  this.value); // 100
+    function bar() {
+      console.log("bar's this: ",  this); // window
+      console.log("bar's this.value: ", this.value); // 1
+      console.log("bar's that: ",  that); // obj
+      console.log("bar's that.value: ", that.value); // 100
+    }
+    bar();
+  }
+};
+
+obj.foo();
+```
+복습시 괜찮은 코드라 또 하기에 남긴다.
+
+```javascript
+function Person(name) {
+  // new없이 호출하는 경우, 전역객체에 name 프로퍼티를 추가
+  this.name = name;
+};
+
+// 일반 함수로서 호출되었기 때문에 객체를 암묵적으로 생성하여 반환하지 않는다.
+// 일반 함수의 this는 전역객체를 가리킨다.
+var me = Person('Lee');
+
+console.log(me); // undefined
+console.log(window.name); // Lee
+```
+*call apply bind*
+[참고자료](https://www.youtube.com/watch?v=KfuyXQLFNW4)
