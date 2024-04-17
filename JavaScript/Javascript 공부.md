@@ -371,12 +371,6 @@ Function.prototype → 상속받는 프로토타입: Object.prototype
 
 하지만 String.prototype안에 해당 함수를 넣어버리면 호출할 수 있다.
 
-*instanceof 작동원리*
-
->    object instanceof Constructor에서, JavaScript는 Constructor.prototype이 object의 프로토타입 체인 어딘가에 존재하는지를 확인.
-    이는 Constructor.prototype이 object.__proto__, object.__proto__.__proto__, ... (이런 식으로 계속 위로 올라가며) 중 하나와 일치하는지를 검사.
-> 즉 메소드 이름이 그 작동원리까지는 나타내지 못하고 있다.
->실제로는 그 생성자의 prototype 속성이 해당 객체의 프로토타입 체인에 포함되어 있는지를 확인하는 것이기 때문
 *프로토타입 객체 변경관련 내용*
 ```javascript
 function Person(name) {
@@ -401,90 +395,239 @@ console.log(bar.constructor); // ② Object()
 프로토타입의 필드가 객체의 필드와 동일하면 객체의 값으로 할당된다.
 *자바의 은닉화 대응되는 개념이다*
 
+## OOP
+JS에서 생성자 함수로 객체 생성시(유사 클래스) 객체별로 메소드가 독립적으로 존재하므로 메모리를 많이 차지한다.
 
-### scope
+Java에서는 메소드는 Method Area에 등록되어 각 인스턴스가 이에 접근을 하는 방식인데 이를 모방할 수 있다.
 
-Dynamic : 함수가 호출되는 시점에서 상위 스코프 결정
-Lexical : 함수가 선언되는 시점에서 상위 스코프 결정 --> Java, Javascript
+따라서 JS에서는 메소드 정의를 __prototype__.prototype에 선언하여 클래스들이 공유할 수 있도록 설정해주면 된다.
 
-*더글라스 크락포드의 제안*
 
-> 전역변수 관리 
+*더글라스 크락포드의 메소드 추가 제안*
+
 ```javascript
-var MYAPP = {};
-
-MYAPP.student = {
-  name: 'Lee',
-  gender: 'male'
-};
-```
-
-## this
-[reference](https://www.youtube.com/watch?v=gvicrj31JOM)
->함수의 호출시 arguments(객체)와 this를 암묵적으로 전달 받음.
->함수 호출 시마다 this에 바인딩 되는 객체가 달라짐...
-
-window(브라우저), global(노드)도 Object.prototype을 상속받는 개체들이다.
-
-메소드로서 호출될 때 함수에 속한 this가 호출한 객체로 변한다. -> 원리 알겠음
-이외 함수 선언할 때에는 this는 global 객체로 변한다.-> 원리 모르겠음 -> 원리라기 보다는 실행 컨텍스트가 시작될 때 this가 바인딩 되는 규칙이라고 이해하면 될 듯 하다.
-
-정리하면,
-
-객체의 메소드로써 호출 될 때 this는 그 객체에 바인디
-단독 함수로 호출 될때 this는 global로 바인딩
-생성자 함수 호출 시 생성되는 객체에 this 바인딩
-call, apply bind 메소드로 this 값 설정 가능
-
-메소드 선언시 프로토타입에 추가하면 프로토타입 객체를 받는지 궁금하여 시험해봤음
-```javascript
-function Student(){
-}
-Student.prototype.sayHello = function(){
-    console.log(this ==student); //true이다...
-}
-const student = new Student();
-student.sayHello();
-
-//처음에 Student.prototype의 메소드로 function이 설정되었는데 어째서 Student.prototype 객체가 this가 아닌지 이해가 안되었다.
-//this는 선언시에 정해지는 것이 아니다!! 호출 될때 누가 호출하였는가로 설정되는 것이기 때문에 student가 호출 하는 순간이므로 this는 student가 되는 것이다.
-```
-> 메소드 내부함수 this를 외부함수 객체로 받는 법
-```javascript
-var value = 1;
-
-var obj = {
-  value: 100,
-  foo: function() {
-    var that = this;  // Workaround : this === obj
-    console.log("foo's this: ",  this);  // obj
-    console.log("foo's this.value: ",  this.value); // 100
-    function bar() {
-      console.log("bar's this: ",  this); // window
-      console.log("bar's this.value: ", this.value); // 1
-      console.log("bar's that: ",  that); // obj
-      console.log("bar's that.value: ", that.value); // 100
-    }
-    bar();
+/**
+ * 모든 생성자 함수의 프로토타입은 Function.prototype이다. 따라서 모든 생성자 함수는 Function.prototype.method()에 접근할 수 있다.
+ * @method Function.prototype.method
+ * @param ({string}) (name) - (메소드 이름)
+ * @param ({function}) (func) - (추가할 메소드 본체)
+ */
+Function.prototype.method = function (name, func) {
+  // 생성자함수의 프로토타입에 동일한 이름의 메소드가 없으면 생성자함수의 프로토타입에 메소드를 추가
+  // this: 생성자함수
+  if (!this.prototype[name]) {
+    this.prototype[name] = func;
   }
 };
 
-obj.foo();
+/**
+ * 생성자 함수
+ */
+function Person(name) {
+  this.name = name;
+}
+
+/**
+ * 생성자함수 Person의 프로토타입에 메소드 setName을 추가
+ */
+Person.method('setName', function (name) {
+  this.name = name;
+});
+
+/**
+ * 생성자함수 Person의 프로토타입에 메소드 getName을 추가
+ */
+Person.method('getName', function () {
+  return this.name;
+});
+
+var me  = new Person('Lee');
+var you = new Person('Kim');
+var him = new Person('choi');
+
+console.log(Person.prototype);
+// Person { setName: [Function], getName: [Function] }
+
+console.log(me);  // Person { name: 'Lee' }
+console.log(you); // Person { name: 'Kim' }
+console.log(him); // Person { name: 'choi' }
 ```
-복습시 괜찮은 코드라 또 하기에 남긴다.
+
+Pseudo Classical Inheritance
+``` javascript
+//해당함수는 즉시실행 함수이기 떄문에 Parent변수는 바로 Parent 함수 객체를 참조하게 된다.
+var Parent = (function () {
+//Parent 함수 Function 객체로 생성
+  function Parent(name) {
+    this.name = name;
+  }
+  Parent.prototype.sayHi = function () {
+    console.log('Hi! ' + this.name);
+  };
+  //반환하는 것을 명심하자
+  return Parent;
+}());
+
+/
+// 자식 생성자 함수
+var Child = (function () {
+  function Child(name) {
+    this.name = name;
+  }
+  Child.prototype = new Parent(); 
+  Child.prototype.sayHi = function () {
+    console.log('안녕하세요! ' + this.name);
+  };
+  Child.prototype.sayBye = function () {
+    console.log('안녕히가세요! ' + this.name);
+  };
+  return Child;
+}());
+
+var child = new Child('child'); 
+
+console.log(child instanceof Parent); // true
+console.log(child instanceof Child);  // true
+
+```
+
+직접 구현해본 상속(자식 객체의 이름이 없을시 부모객체의 이름을 상속 받는 코드)
 
 ```javascript
-function Person(name) {
-  // new없이 호출하는 경우, 전역객체에 name 프로퍼티를 추가
-  this.name = name;
-};
+let Parent = (function () {
+    function Parent(name = "이름 미등록") {
+        this.name = name;
+    }
+    return Parent;
+}())
 
-// 일반 함수로서 호출되었기 때문에 객체를 암묵적으로 생성하여 반환하지 않는다.
-// 일반 함수의 this는 전역객체를 가리킨다.
-var me = Person('Lee');
 
-console.log(me); // undefined
-console.log(window.name); // Lee
+let Child = (function () {
+    function Child(name=Child.prototype.name) {
+        this.name =name
+    }
+    Child.prototype = new Parent();
+    return Child;
+}())
+
+let child = new Child("James");
+let anonymous = new Child();
+
+console.log(child.name);
+console.log(anonymous.name);
 ```
-*call apply bind*
-[참고자료](https://www.youtube.com/watch?v=KfuyXQLFNW4)
+
+**이러한 방식으로는 new를 놓쳤을 때 this가 전역으로 배치되고, new 객체의 prototype을 다시 참조하여 부모 함수의 prototype까지 도달하면서 생각해야 하는등 여러모로 불편함이 많이 느껴졌다.**
+
+**생성자링크도 Child.prototype이 Parent로 생성된 객체로 변화하여 Parent.prototype까지 들러 Parent 함수로 Constructor를 반환하는 문제가 있다.**
+
+따라서 Object.create(상속받고자 하는 프로토타입 객체);를 쓴다. 그러면 매개변수를 [[프로토타입]]으로 가진 객체가 생성된다.
+
+동물 컨셉으로 코드를 짜보았다.
+```javascript
+let Animal = (function () {
+  //생성자에 아무런 조치를 취하지 않았으므로 추상클래스로 작동할 것이다.
+    function Animal() {}
+    Animal.prototype.name = "이름 미지정"
+    Animal.prototype.sayHello = function () { console.log("메소드 미지정") }
+    return Animal;
+})();
+
+let dog = Object.create(Animal.prototype);
+dog.sayHello = function () { console.log("멍멍!"); }
+
+dog.sayHello(); // 멍멍!
+console.log(dog.name); //이름 미지정
+```
+
+리터럴로 생성한 객체는 Object.create를 할때 그냥 해당 객체를 프로토타입으로 참조하게끔 하면된다.
+
+즉 Pseudo 방식은 new로 객체를 만든 다음 프로토타입으로 지정하여 new 객체의 prototype 체인을 형성하는 것이고,
+
+Object.create 방식은 다이렉트로 prototype체인을 연결해주는 것이라 할 수 있다.
+
+Object.create 폴리필
+```javascript
+if (!Object.create) {
+  Object.create = function (o) {
+    function F() {}
+    F.prototype = o;
+    return new F();
+  };
+}
+```
+
+*private화*
+
+원하는 변수를 클로저 함수에 연결시켜 힙 메모리로 옮긴 후 다루는 방식이다.
+클로저 함수는 객체의 프로퍼티와 계속 연결되어 있기 때문에 GC에서 처리하지 않는다.
+```javascript
+var Person = function(arg) {
+  var name = arg ? arg : ''; // ①
+
+  this.getName = function() {
+    return name;
+  };
+
+  this.setName = function(arg) {
+    name = arg;
+  };
+}
+```
+
+get으로 참조값을 반환하는 경우 외부에서 수정이 가능하므로, 다른 변수에 복사해서 복사본을 건네주는 식으로 코딩해야한다.
+
+
+상속과 은닉을 동시에 할 수 있는 코드이다.
+>제시된 코드
+```javascript
+var Person = function() {
+  var name;
+  //Person.prototype 상속 받는 F 함수객체 생성
+  var F = function(arg) { name = arg ? arg : ''; };
+  F.prototype = {
+    getName: function() {return name;},
+    setName: function(arg) {name = arg;}
+  };
+  return F;
+}();
+```
+
+>내가 한 방식(이러면 new를 쓰지 못하므로 구분하기가 어려울 수 있을듯하다.)
+```javascript
+var Person = function (arg) {
+    var name = arg ? arg : "";
+    var object = Object.create(Person.prototype);
+    object.getName =function(){return name;};
+    object.setName =function(arg){name=arg;};
+    /* 주석처럼 하면 함수 객체가 리터럴 객체로 반환되서 프로토타입을 공유하지 않아 취소함.
+    object = {
+        getName: function () { return name; },
+        setName: function (arg) { name = arg }
+    }
+    */
+    return object;
+}
+```
+## global object
+*자동 형변환 한후 변화시킴 e.g. null -> 0*
+parseFloat()
+parseInt()
+
+## Math
+```javascript
+function isEqual(a, b){
+  return Math.abs(a - b) < Number.EPSILON;
+}
+```
+(77).toString(); // '77'
+1.23.toString (); // '1.23'
+77.toString(); // SyntaxError: Invalid or unexpected token
+```javascript
+/**
+ * @param {number} [fractionDigits] - 0~20 사이의 정수값으로 소숫점 이하 자릿수를 나타낸다. 기본값은 0이며 옵션으로 생략 가능하다.
+ * @return {string}
+ */
+numObj.toFixed([fractionDigits])
+//금액처리할 때 좋을듯 함. 반올림 개념임
+```
