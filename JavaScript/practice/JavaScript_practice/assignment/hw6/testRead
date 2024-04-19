@@ -1,0 +1,24 @@
+const readFile =require("fs").readFileSync;
+
+const HAMLET_PATH ="./hamlet.txt"
+
+const countAlphabetFrequency = (str) =>{
+    const map={};
+    for(let i=0; i<str.length; i++){
+        const letter = str.charAt(i).toLowerCase();
+        //자동형변환 한번 더
+        //클래스 대괄호 변수 한번 더 보기
+        if(letter >="a"&& letter<="z"){
+            map[letter]=(map[letter]||0)+1;
+        }
+    }
+    return map;
+}
+
+const sumValues = (map) =>{
+    let total=0;
+    for(const key in map){
+        total += map[key];
+    }
+    return total;
+}
