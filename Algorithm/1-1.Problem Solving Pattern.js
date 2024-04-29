@@ -27,7 +27,7 @@ same = function (arr1, arr2) {
     if (arr1.length != arr2.length) {
         return false;
     } else {
-        const squaredArr1 = arr1.map(e => e **2);
+        const squaredArr1 = arr1.map(e => e ** 2);
 
         const freqArr1 = squaredArr1.reduce((freq, e) => {
             freq[e] = ++freq[e] || 1;
@@ -49,8 +49,8 @@ same = function (arr1, arr2) {
 }
 
 console.log(same([1, 2, 3], [4, 1, 9])); // true
-console.log(same([1,2,3], [1,9]));//false
-console.log(same([1,2,1], [4,4,1])); //false
+console.log(same([1, 2, 3], [1, 9]));//false
+console.log(same([1, 2, 1], [4, 4, 1])); //false
 
 /*
 수업 이전 시간 복잡도 : map 메소드에서 n, reduce에서 2n, for in 문에서 n으로 O(4n)의 시간복잡도로 해결했다.
@@ -58,25 +58,25 @@ console.log(same([1,2,1], [4,4,1])); //false
 
 //답지에서 naive알고리즘은 indexOf로 인하여 O(n^2)의 복잡도를 가진다. 그런데 내가 짠 코드보다 보기에는 훨씬 편한듯 하다.
 
-function sameNaive(arr1, arr2){
-    if(arr1.length!=arr2.length){
+function sameNaive(arr1, arr2) {
+    if (arr1.length != arr2.length) {
         return false;
     }
-    else{
-        for(let i=0; i< arr1.length;i++){
-            correctIndex =arr2.indexOf(arr1[i]**2);
-            if(correctIndex <0){
+    else {
+        for (let i = 0; i < arr1.length; i++) {
+            correctIndex = arr2.indexOf(arr1[i] ** 2);
+            if (correctIndex < 0) {
                 return false;
             }
-            arr2.splice(correctIndex,1);
+            arr2.splice(correctIndex, 1);
         }
         return true;
     }
 }
 
 console.log(sameNaive([1, 2, 3], [4, 1, 9])); // true
-console.log(sameNaive([1,2,3], [1,9]));//false
-console.log(sameNaive([1,2,1], [4,4,1])); //false
+console.log(sameNaive([1, 2, 3], [1, 9]));//false
+console.log(sameNaive([1, 2, 1], [4, 4, 1])); //false
 
 /*
 답지에서 O(n)으로 가는 과정이 나랑 거의 똑같았다.
@@ -102,13 +102,13 @@ sameUpdated = function (arr1, arr2) {
         for (index in freqArr1) {
 
             //답지에서는 in 연산자로 검사 하나를 더 수행했다.
-            if(!(index**2 in freqArr2)){
+            if (!(index ** 2 in freqArr2)) {
                 return false;
             }
 
             //여기 if 구문에서 어차피 index가 value 값과 동일 하므로
             //제곱의 값을 가지는 index에다가 제곱을 해서 복잡도 n을 한번 더 줄인 것이다.
-            if (freqArr1[index] !== freqArr2[index**2]) {
+            if (freqArr1[index] !== freqArr2[index ** 2]) {
                 return false;
             }
         }
@@ -128,3 +128,42 @@ key를 해시함수를 통해 해시 코드로 변환한다.(이후)버킷 배�
 ex) property.length % 버킷배열.length가 해시함수로 사용될 수 있다.
 따라서 property in object 시 property를 해시함수를 거친 코드를 주소값으로 버킷배열에 접근하므로 평균적으로 O(1)의 시간복잡도를 가지데 된다.
 */
+
+
+//quiz
+//두개의 문자열을 받은 후 그 문자열들의 anagram이 일치하는지 복잡도 O(n)으로 구현하라.
+
+function validAnagram(arg1, arg2) {
+    if(arg1.length!=arg2.length){
+        return false;
+    } //최초 코드에서는 해당 조건을 쓰지 않았기 때문에, arg2의 일부가 arg1와 똑같고 나머지 추가적인 데이터가 있어도 true를 반환하는 문제가 있었다. 상기 구문으로 해당 내용을 해소했다.
+
+    const arr1 = makePatternData(arg1);
+    //const arr2 = makePatternData(arg2); 해당 메소드는 어차피 arg2의 데이터를 가지고 비교하면 되므로 불필요하다.
+
+    for (let i =0; i< arg2.length; i++) {
+        letter = arg2[i];
+        if (!arr1[letter]) {
+        return false;
+        }
+        arr1[letter]-=1;
+    }
+    //최초에는 for in 문으로 두개의 객체를 비교했었다.
+    return true;
+
+}
+
+function makePatternData(string) {
+    const lowString = string.toLowerCase();
+    let arr = Array.from(lowString);
+    return arr.reduce((acc, elem) => {
+        acc[elem] = ++acc[elem] || 1;
+        return acc;
+    }, {});
+}
+
+console.log(validAnagram("abc", "cba"));//true
+console.log(validAnagram("accc", "abcc"));//false
+
+//전반적으로 최대한 주어진 값을 쓰는 습관을 들이는 것이 중요하다
+//현재의 나는 습관적으로 데이터를 한번 더 가공하여(내가 이해하기 쉽게) 처리하는 경향이 있는데, 이는 가독성에도 별로 좋지않다.
