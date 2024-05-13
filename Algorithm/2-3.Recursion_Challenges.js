@@ -182,10 +182,11 @@ function stringifyNumbers(obj) {
     let newObj = Object.assign({}, obj)
     for (let i in newObj) {
         if (typeof newObj[i] == 'object') {
-            if(Array.isArray(newObj[i])){
+            if (Array.isArray(newObj[i])) {
                 newObj[i] = [];
-            } else{
-            newObj[i] = stringifyNumbers(newObj[i])};
+            } else {
+                newObj[i] = stringifyNumbers(newObj[i])
+            };
         } else if (typeof newObj[i] === "number") {
             newObj[i] = newObj[i] + "";
         }
@@ -194,34 +195,42 @@ function stringifyNumbers(obj) {
 }
 
 //중첩 객체내의 문자열만 배열로 추출해낸다.
-const objString = {
-    stuff: "foo",
-    data: {
-        val: {
-            thing: {
-                info: "bar",
-                moreInfo: {
-                    evenMoreInfo: {
-                        weMadeIt: "baz"
-                    }
-                }
-            }
-        }
-    }
-}
-function collectStrings(obj){
+
+//최초에 검색으로 알아낸 부분
+function collectStrings(obj) {
     let result = [];
-    for(let i in obj){
-        if(typeof obj[i] == "object" && obj[i] !== null && !Array.isArray(obj[i])){
+    for (let i in obj) {
+        if (typeof obj[i] == "object" && obj[i] !== null && !Array.isArray(obj[i])) {
             result = result.concat(collectStrings(obj[i]));
-        } if(typeof obj[i]=="string"){
+        } if (typeof obj[i] == "string") {
             result.push(obj[i]);
         }
     }
-    return result    
+    return result
+}
+
+//복습할 때 concat의 원리를 이해하고 재작성한 부분
+//Array.prototpye.push 는 반환 값이 추가가 된 배열의 길이를 반환하므로 result =을 앞에붙일 필요가 없다.
+
+function collectStrings(obj) {
+    let result = [];
+    for (let index in obj) {
+        if (typeof obj[index] !== 'object') {
+            result.push(obj[index])
+        }
+        else {
+            //여기서 헷갈리면 안되는 점은 하위 부분을 전부 빠짐없이 result로 담은 배열을 다시 현 루프에서의 배열과 합치시켜 자식과 현 배열을 합친다는 점이다. 
+            //즉 자식들의 result는 다시 return되면서 부모의 else 루프 속으로 리턴되며 그 리턴된 result이 부모 result에 합쳐지는 식으로 모든 result객체를 한루프에서 완결 짓고, 첫번째 부모에서 다시 루프를 도는 식이다.
+            result = result.concat(collectStrings(obj[index]));
+        }
+    }
+
+    return result;
 }
 
 
 
+
+console.log(collectStrings(obj0))
 
 
